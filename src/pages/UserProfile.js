@@ -29,7 +29,6 @@ const UserProfile = () => {
           lastName: data.lastName,
           email: data.email,
           phoneNumber: data.phoneNumber,
-          
         });
       })
       .catch((err) => console.error("Error fetching user info:", err));
@@ -193,29 +192,28 @@ const UserProfile = () => {
             <div style={styles.reservationSection}>
               <h2 style={styles.sectionTitle}>Your Reservations</h2>
               <div style={styles.card}>
-              {reservations.length > 0 ? (
-  <ul style={styles.reservationList}>
-    {reservations.map((reservation) => (
-      <li key={reservation.id} style={styles.reservationItem}>
-        <p><strong>Car:</strong> {reservation.carName}</p>
-        <p><strong>Pickup:</strong> {reservation.pickupDate}</p>
-        <p><strong>Dropoff:</strong> {reservation.dropOffDate}</p>
-        <p><strong>Status:</strong> {reservation.status}</p>
-        {reservation.status === "Active" && (
-          <button
-            style={styles.cancelButton}
-            onClick={() => handleCancelReservation(reservation.id)}
-          >
-            Cancel Reservation
-          </button>
-        )}
-      </li>
-    ))}
-  </ul>
-) : (
-  <p>No reservations found.</p>
-)}
-
+                {reservations.length > 0 ? (
+                  <ul style={styles.reservationList}>
+                    {reservations.map((reservation) => (
+                      <li key={reservation.id} style={styles.reservationItem}>
+                        <p><strong>Car:</strong> {reservation.carName}</p>
+                        <p><strong>Pickup:</strong> {reservation.pickupDate}</p>
+                        <p><strong>Dropoff:</strong> {reservation.dropOffDate}</p>
+                        <p><strong>Status:</strong> {reservation.status}</p>
+                        {reservation.status === "Active" && (
+                          <button
+                            style={styles.cancelButton}
+                            onClick={() => handleCancelReservation(reservation.id)}
+                          >
+                            Cancel Reservation
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No reservations found.</p>
+                )}
               </div>
             </div>
           </div>
@@ -239,9 +237,31 @@ const styles = {
     alignItems: "center",
     minHeight: "100vh",
     position: "relative",
-    backgroundColor: "#f4f6f9",
+    backgroundColor: "#323c54",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
+
+  // bgImage: {
+  //   position: "absolute",
+  //   top: 0,
+  //   left: 0,
+  //   width: "100%",
+  //   height: "100%",
+  //   background: "url('https://img.freepik.com/free-vector/white-abstract-background_23-2148810113.jpg?t=st=1733165619~exp=1733169219~hmac=0a4f4cc0d9114188dbe3797236c0f7c60584a7c8177aca1bb79566940bec41ce&w=996') no-repeat center center",
+  //   backgroundSize: "cover",
+  //   zIndex: "-1",
+  //   filter: "brightness(0.5)",
+  // },
+
+  // overlay: {
+  //   position: "absolute",
+  //   top: 0,
+  //   left: 0,
+  //   width: "100%",
+  //   height: "100%",
+  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
+  //   zIndex: "-1",
+  // },
 
   content: {
     padding: "40px 20px",
@@ -249,6 +269,9 @@ const styles = {
     textAlign: "center",
     maxWidth: "800px",
     margin: "0 auto",
+    borderRadius: "10px",
+    boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   title: {
     fontSize: "2.5rem",
@@ -270,7 +293,7 @@ const styles = {
     maxWidth: "600px",
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#333740",
     borderRadius: "8px",
     padding: "20px",
     boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
@@ -332,7 +355,7 @@ const styles = {
   reservationItem: {
     padding: "12px",
     marginBottom: "15px",
-    backgroundColor: "#fff",
+    backgroundColor: "#333740",
     borderRadius: "8px",
     boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
     border: "1px solid #ddd",

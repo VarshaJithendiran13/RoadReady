@@ -244,7 +244,7 @@ const RoadReadyHome = () => {
       </Filters>
 
       {/* Cars Listing */}
-      <CarList>
+<CarList>
   {paginatedCars.length > 0 ? (
     paginatedCars.map((car) => (
       <CarCard key={car.carId}>
@@ -255,7 +255,7 @@ const RoadReadyHome = () => {
           <CarDescription>{car.specifications}</CarDescription> {/* Use specifications */}
           <CarLocation>Location: {car.location}</CarLocation>
           <CarAvailability>Status: {car.availabilityStatus ? "Available" : "Not Available"}</CarAvailability> {/* Render availability */}
-          <ReserveButton to={`/reservenow/${car.carId}`}>Reserve Now</ReserveButton> {/* Use carId for reservation link */}
+          <ReserveButton to={`/reservenow/${car.carId}`} onClick={()=>{console.log(car.carId)}} >Reserve Now</ReserveButton> {/* Use carId for reservation link */}
         </CarDetails>
       </CarCard>
     ))

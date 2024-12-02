@@ -41,9 +41,10 @@ const App = () => {
           {/* User Profile page */}
           <Route path="/profile" element={<UserProfile />} />
           
-          <Route path="/reserveNow/:id" element={<ReserveNow />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/success" element={<Success />} />
+          <Route path="/reservenow/:id" element ={<ReserveNow />} />
+
+          {/* <Route path="/payment" element={<Payment />} />
+          <Route path="/success" element={<Success />} /> */}
 
         </Routes>
         <ToastContainer />

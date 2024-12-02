@@ -82,7 +82,9 @@ const ErrorMessage = styled.p`
 `;
 
 const ReserveNow = () => {
-  const { carId, userId } = useParams(); // Fetch carId and userId from the URL params
+  const { id } = useParams();
+  const params = useParams();
+  // Only carId is needed now
   const navigate = useNavigate();
 
   const [car, setCar] = useState({});
@@ -93,26 +95,26 @@ const ReserveNow = () => {
 
   // Fetch car details based on carId
   useEffect(() => {
-    if (!carId) {
+    console.log(params.id)
+    if (!params.id) {
       setErrorMessage("Car ID is missing");
       return; // Stop further execution if carId is missing
     }
+    
 
     const fetchCarDetails = async () => {
       try {
-        const response = await fetch(`https://localhost:7173/api/Car/${carId}`);
-        console.log("Response Status:", response.status);  // Log response status
+        const response = await fetch(`https://localhost:7173/api/Car/${params.id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
         }
         const data = await response.json();
-        console.log("Fetched car details:", data); // Log car details
-
-        if (!data.name || !data.pricePerDay) {
-          setErrorMessage("Car data is incomplete.");
-          return;
-        }
-
+        console.log(data)
         setCar(data);
         setTotalPrice(data.pricePerDay); // Set price based on the car's price per day
       } catch (error) {
@@ -122,7 +124,7 @@ const ReserveNow = () => {
     };
 
     fetchCarDetails();
-  }, [carId]);
+  },[params.id]);
 
   // Calculate the total price based on dates
   useEffect(() => {
@@ -155,12 +157,11 @@ const ReserveNow = () => {
     }
 
     const reservationData = {
-      userId: parseInt(userId), // Ensure userId is a number
-      carId: parseInt(carId),   // Ensure carId is a number
+      carId: params.id, // carId from URL params
       pickupDate: pickupDate,
       dropOffDate: dropOffDate,
       totalPrice: totalPrice,
-      reservationStatus: "Confirmed", // You can adjust this based on your needs
+      reservationStatus: "Confirmed", // Set reservation status to 'Confirmed'
     };
 
     try {
@@ -168,6 +169,7 @@ const ReserveNow = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(reservationData),
       });
@@ -178,7 +180,7 @@ const ReserveNow = () => {
 
       const result = await response.json();
       alert("Reservation confirmed!");
-      navigate("/UserProfile"); // Redirect to reservations page after successful reservation
+      navigate("/UserProfile"); // Redirect to profile page after successful reservation
     } catch (error) {
       alert("An error occurred while making the reservation.");
       console.error(error);
