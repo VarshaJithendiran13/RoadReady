@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Card, CardContent, List, ListItem, Grid } from "@mui/material";
-import { Edit, Save, Cancel, Delete } from "@mui/icons-material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  List,
+  ListItem,
+  Grid,
+} from "@mui/material";
+import { Edit, Save, Cancel, Delete, CancelOutlined } from "@mui/icons-material";
+import "@fontsource/bodoni-moda";
 import { useNavigate } from "react-router-dom";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const UserProfile = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -16,6 +29,10 @@ const UserProfile = () => {
   });
   const [carId, setCarId] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
 
   // Fetch personal info
   useEffect(() => {
@@ -88,6 +105,26 @@ const UserProfile = () => {
       .catch((err) => console.error("Error fetching car reservations:", err));
   };
 
+  // Cancel reservation
+  const handleCancelReservation = (reservationId) => {
+    fetch(`https://localhost:7173/api/Reservation/${reservationId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          alert("Reservation cancelled successfully!");
+          setReservations(reservations.filter((r) => r.id !== reservationId));
+          setCarReservations(carReservations.filter((r) => r.id !== reservationId));
+        } else {
+          alert("Failed to cancel reservation.");
+        }
+      })
+      .catch((err) => console.error("Error cancelling reservation:", err));
+  };
+
   // Delete user account
   const handleDeleteAccount = () => {
     fetch("https://localhost:7173/api/User", {
@@ -119,8 +156,9 @@ const UserProfile = () => {
         justifyContent: "space-between",
         gap: "20px",
         padding: "40px",
-        backgroundColor: "#1e1e2f",
+        background: "linear-gradient(120deg, #2a4180, #1b274a)",
         minHeight: "100vh",
+        fontFamily: "'Bodoni Moda', serif",
       }}
     >
       {/* Left Section */}
@@ -128,16 +166,26 @@ const UserProfile = () => {
         {/* User Info Section */}
         <Grid item>
           <Card
+            data-aos="fade-right"
             sx={{
-              backgroundColor: "#2c2c45",
+              backgroundColor: "#142642",
               color: "#ffffff",
-              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+              boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.6)",
               borderRadius: "15px",
               padding: "20px",
             }}
           >
             <CardContent>
-              <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: "bold", textAlign: "center" }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  marginBottom: 2,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "#b7d1f7",
+                  textTransform: "uppercase",
+                }}
+              >
                 User Details
               </Typography>
               {editMode ? (
@@ -148,6 +196,7 @@ const UserProfile = () => {
                     value={updatedInfo.firstName || ""}
                     onChange={(e) => setUpdatedInfo({ ...updatedInfo, firstName: e.target.value })}
                     margin="normal"
+                    color="primary"
                   />
                   <TextField
                     fullWidth
@@ -171,7 +220,7 @@ const UserProfile = () => {
                     margin="normal"
                   />
                   <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
-                    <Button startIcon={<Save />} variant="contained" color="success" onClick={handleUpdate}>
+                    <Button startIcon={<Save />} variant="contained" sx={{ backgroundColor: "#45a3e5" }} onClick={handleUpdate}>
                       Save
                     </Button>
                     <Button startIcon={<Cancel />} variant="contained" color="error" onClick={() => setEditMode(false)}>
@@ -185,14 +234,14 @@ const UserProfile = () => {
                   <Typography><strong>Last Name:</strong> {userInfo.lastName}</Typography>
                   <Typography><strong>Email:</strong> {userInfo.email}</Typography>
                   <Typography><strong>Phone:</strong> {userInfo.phoneNumber}</Typography>
-                  <Button startIcon={<Edit />} sx={{ marginTop: 2 }} onClick={() => setEditMode(true)} variant="contained">
+                  <Button startIcon={<Edit />} sx={{ marginTop: 2, backgroundColor: "#45a3e5" }} onClick={() => setEditMode(true)} variant="contained">
                     Edit Profile
                   </Button>
                 </>
               )}
               <Button
                 startIcon={<Delete />}
-                sx={{ marginTop: 2 }}
+                sx={{ marginTop: 2, backgroundColor: "#eb3443" }}
                 color="error"
                 variant="contained"
                 onClick={handleDeleteAccount}
@@ -203,20 +252,30 @@ const UserProfile = () => {
           </Card>
         </Grid>
 
-        {/* View Reservations for Your Car Section */}
+        {/* Reservations by Car ID */}
         <Grid item>
           <Card
+            data-aos="fade-right"
             sx={{
-              backgroundColor: "#2c2c45",
+              backgroundColor: "#142642",
               color: "#ffffff",
-              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+              boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.6)",
               borderRadius: "15px",
               padding: "20px",
             }}
           >
             <CardContent>
-              <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: "bold", textAlign: "center" }}>
-                View Reservations for Your Car
+              <Typography
+                variant="h5"
+                sx={{
+                  marginBottom: 2,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "#b7d1f7",
+                  textTransform: "uppercase",
+                }}
+              >
+                Reservations for Your Car
               </Typography>
               <TextField
                 fullWidth
@@ -226,13 +285,16 @@ const UserProfile = () => {
                 margin="normal"
               />
               <Button
-                sx={{ marginTop: 2 }}
+                sx={{
+                  marginTop: 2,
+                  backgroundColor: "#45a3e5",
+                  ":hover": { backgroundColor: "#3388d1" },
+                }}
                 variant="contained"
                 onClick={handleFetchCarReservations}
               >
                 View Reservations
               </Button>
-
               <List sx={{ marginTop: 2 }}>
                 {carReservations.length > 0 ? (
                   carReservations.map((reservation) => (
@@ -246,6 +308,7 @@ const UserProfile = () => {
                         backgroundColor: "#3a3a55",
                         borderRadius: "10px",
                         marginBottom: "10px",
+                        ":hover": { transform: "scale(1.02)", transition: "all 0.3s" },
                       }}
                     >
                       <Box>
@@ -254,6 +317,14 @@ const UserProfile = () => {
                         <Typography><strong>Dropoff:</strong> {reservation.dropOffDate}</Typography>
                         <Typography><strong>Status:</strong> {reservation.reservationStatus}</Typography>
                       </Box>
+                      <Button
+                        startIcon={<Cancel />}
+                        color="error"
+                        variant="contained"
+                        onClick={() => handleCancelReservation(reservation.id)}
+                      >
+                        Cancel
+                      </Button>
                     </ListItem>
                   ))
                 ) : (
@@ -268,17 +339,27 @@ const UserProfile = () => {
       {/* Right Section */}
       <Grid item sx={{ flex: 1, maxWidth: "48%" }}>
         <Card
+          data-aos="fade-left"
           sx={{
-            backgroundColor: "#2c2c45",
+            backgroundColor: "#142642",
             color: "#ffffff",
-            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+            boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.6)",
             borderRadius: "15px",
             padding: "20px",
             minHeight: "100%",
           }}
         >
           <CardContent>
-            <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: "bold", textAlign: "center" }}>
+            <Typography
+              variant="h5"
+              sx={{
+                marginBottom: 2,
+                fontWeight: "bold",
+                textAlign: "center",
+                color: "#b7d1f7",
+                textTransform: "uppercase",
+              }}
+            >
               Car Reservations
             </Typography>
             <List sx={{ marginTop: 2 }}>
@@ -291,9 +372,10 @@ const UserProfile = () => {
                       justifyContent: "space-between",
                       alignItems: "center",
                       padding: "10px",
-                      backgroundColor: "#3a3a55",
+                      backgroundColor: "#1e3963",
                       borderRadius: "10px",
                       marginBottom: "10px",
+                      ":hover": { transform: "scale(1.02)", transition: "all 0.3s" },
                     }}
                   >
                     <Box>
@@ -302,6 +384,14 @@ const UserProfile = () => {
                       <Typography><strong>Dropoff:</strong> {reservation.dropOffDate}</Typography>
                       <Typography><strong>Status:</strong> {reservation.reservationStatus}</Typography>
                     </Box>
+                    <Button
+                      startIcon={<Cancel />}
+                      color="error"
+                      variant="contained"
+                      onClick={() => handleCancelReservation(reservation.id)}
+                    >
+                      Cancel
+                    </Button>
                   </ListItem>
                 ))
               ) : (

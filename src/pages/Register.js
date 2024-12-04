@@ -51,7 +51,7 @@ const Register = () => {
         justifyContent: "flex-start",
         alignItems: "flex-start",
         backgroundImage:
-          "url('https://img.freepik.com/free-photo/stylish-elegant-woman-car-salon_1157-20980.jpg?t=st=1732863843~exp=1732867443~hmac=06d0296e576820f3452cfd969318dd6bb949295c2c2aa74e7683c8dc2af65f39&w=996')",
+          "url('https://media.istockphoto.com/id/1419724017/photo/car-rental-agency-employee-giving-car-keys-to-beautiful-young-woman.jpg?b=1&s=612x612&w=0&k=20&c=Qd2P0VYuQGmethhCvWzR51PgZmGEN9YaWl47PiYL-3Q=')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backdropFilter: "blur(10px)",
@@ -255,39 +255,7 @@ const Register = () => {
             Register
           </Button>
 
-          {/* Redirect button for Admin registration */}
-          <Button
-            onClick={handleRedirectAdminRegister}
-            sx={{
-              marginTop: 2,
-              backgroundColor: "#80cbc4",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "#26a69a",
-              },
-              padding: "8px",
-              borderRadius: "8px",
-            }}
-          >
-            Register as Admin
-          </Button>
-
-          {/* Redirect button for Host registration */}
-          <Button
-            onClick={handleBecomeHost}
-            sx={{
-              marginTop: 2,
-              backgroundColor: "#80cbc4",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "#26a69a",
-              },
-              padding: "8px",
-              borderRadius: "8px",
-            }}
-          >
-            Become a Host
-          </Button>
+          
         </form>
       </Box>
     </Box>
