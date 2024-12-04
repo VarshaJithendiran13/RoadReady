@@ -38,6 +38,10 @@ const Register = () => {
     navigate("/admin-register"); // Navigate to Admin registration page
   };
 
+  const handleBecomeHost = () => {
+    navigate("/host-register"); // Navigate to Host registration page
+  };
+
   return (
     <Box
       sx={{
@@ -266,6 +270,23 @@ const Register = () => {
             }}
           >
             Register as Admin
+          </Button>
+
+          {/* Redirect button for Host registration */}
+          <Button
+            onClick={handleBecomeHost}
+            sx={{
+              marginTop: 2,
+              backgroundColor: "#80cbc4",
+              color: "#fff",
+              "&:hover": {
+                backgroundColor: "#26a69a",
+              },
+              padding: "8px",
+              borderRadius: "8px",
+            }}
+          >
+            Become a Host
           </Button>
         </form>
       </Box>

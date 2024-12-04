@@ -1,0 +1,69 @@
+.payment-container {
+    background-color: #121212;
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: 50px auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  }
+  
+  h1, h2 {
+    color: #00aaff;
+    text-align: center;
+  }
+  
+  .booking-details, .payment-form {
+    margin-top: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #00aaff;
+    border-radius: 5px;
+    background-color: #181818;
+    color: #ffffff;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #00aaff;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0077cc;
+  }
+  
+  .result-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .result-message.success {
+    background-color: #007700;
+  }
+  
+  .result-message.error {
+    background-color: #aa0000;
+  }
+  

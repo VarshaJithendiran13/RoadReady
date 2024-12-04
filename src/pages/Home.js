@@ -29,7 +29,7 @@ const Home = () => (
         <Link to="/login" style={styles.button}>
           Login
         </Link>
-        <Link to="/register" style={{ ...styles.button, backgroundColor: "#27ae60" }}>
+        <Link to="/register" style={{ ...styles.button, backgroundColor: "#b9dced" }}>
           Register
         </Link>
       </div>
@@ -44,7 +44,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    backgroundImage: "url('https://img.freepik.com/free-photo/stylish-elegant-woman-car-salon_1157-20980.jpg?t=st=1732863843~exp=1732867443~hmac=06d0296e576820f3452cfd969318dd6bb949295c2c2aa74e7683c8dc2af65f39&w=996')", // Replace with desired image URL
+    backgroundImage: "url('https://media.istockphoto.com/id/1419724017/photo/car-rental-agency-employee-giving-car-keys-to-beautiful-young-woman.jpg?b=1&s=612x612&w=0&k=20&c=Qd2P0VYuQGmethhCvWzR51PgZmGEN9YaWl47PiYL-3Q=')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -72,7 +72,7 @@ const styles = {
     color: "#ffffff",
   },
   highlight: {
-    color: "#f39c12",
+    color: "#72c4ed",
   },
   subtitle: {
     fontSize: "1.5rem",
@@ -89,7 +89,7 @@ const styles = {
   },
   featureItem: {
     textAlign: "center",
-    color: "#f39c12",
+    color: "#3e5161",
   },
   icon: {
     fontSize: "2.5rem",
@@ -106,8 +106,8 @@ const styles = {
   button: {
     display: "inline-block",
     padding: "15px 30px",
-    backgroundColor: "#f39c12",
-    color: "white",
+    backgroundColor: "#72c4ed",
+    color: "black",
     fontSize: "1.2rem",
     fontWeight: "bold",
     borderRadius: "30px",

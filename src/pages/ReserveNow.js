@@ -64,6 +64,13 @@ const Button = styled.button`
   }
 `;
 
+const WriteReviewButton = styled(Button)`
+  background-color: #4caf50;
+
+  &:hover {
+    background-color: #43a047;
+  }
+`;
 const CarDetails = styled.div`
   margin-bottom: 20px;
   text-align: center;
@@ -81,10 +88,55 @@ const ErrorMessage = styled.p`
   text-align: center;
 `;
 
+const ReviewSection = styled.div`
+  margin-top: 30px;
+  width: 100%;
+  max-width: 600px;
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+`;
+
+const ReviewTitle = styled.h3`
+  color: white;
+  margin-bottom: 15px;
+`;
+
+const ReviewCard = styled.div`
+  background-color: #333;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ReviewUser = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const UserIcon = styled.img`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+`;
+
+const ReviewContent = styled.p`
+  color: #e0e0e0;
+  margin-bottom: 5px;
+`;
+
+const ReviewDate = styled.span`
+  color: #999;
+  font-size: 0.9em;
+`;
+
 const ReserveNow = () => {
   const { id } = useParams();
-  const params = useParams();
-  // Only carId is needed now
   const navigate = useNavigate();
 
   const [car, setCar] = useState({});
@@ -92,29 +144,27 @@ const ReserveNow = () => {
   const [dropOffDate, setDropOffDate] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
+  const [reviews, setReviews] = useState([]);
 
   // Fetch car details based on carId
   useEffect(() => {
-    console.log(params.id)
-    if (!params.id) {
+    if (!id) {
       setErrorMessage("Car ID is missing");
-      return; // Stop further execution if carId is missing
+      return;
     }
-    
 
     const fetchCarDetails = async () => {
       try {
-        const response = await fetch(`https://localhost:7173/api/Car/${params.id}`, {
+        const response = await fetch(`https://localhost:7173/api/Car/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        
+
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
         }
         const data = await response.json();
-        console.log(data)
         setCar(data);
         setTotalPrice(data.pricePerDay); // Set price based on the car's price per day
       } catch (error) {
@@ -124,7 +174,34 @@ const ReserveNow = () => {
     };
 
     fetchCarDetails();
-  },[params.id]);
+  }, [id]);
+
+  // Fetch reviews for the car
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`https://localhost:7173/api/Review/car/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`API responded with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        setReviews(data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error.message);
+      }
+    };
+
+    fetchReviews();
+  }, [id]);
+  const navigateToPostReview = () => {
+    navigate(`/postreview`, { state: { carId: id } });
+  };
 
   // Calculate the total price based on dates
   useEffect(() => {
@@ -151,13 +228,15 @@ const ReserveNow = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate input values
     if (!pickupDate || !dropOffDate || totalPrice <= 0) {
       setErrorMessage("Please provide valid dates and ensure the total price is greater than 0.");
       return;
     }
 
     const reservationData = {
-      carId: params.id, // carId from URL params
+      carId: id, // carId from URL params
       pickupDate: pickupDate,
       dropOffDate: dropOffDate,
       totalPrice: totalPrice,
@@ -169,7 +248,7 @@ const ReserveNow = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
         },
         body: JSON.stringify(reservationData),
       });
@@ -179,12 +258,36 @@ const ReserveNow = () => {
       }
 
       const result = await response.json();
-      alert("Reservation confirmed!");
-      navigate("/UserProfile"); // Redirect to profile page after successful reservation
+      if (result && result.reservationId) {
+        alert("Reservation confirmed!");
+
+        // Redirect to payment page with reservation details
+        navigate("/payment", {
+          state: {
+            totalAmount: totalPrice,
+            carName: `${car.make} ${car.model}`,
+            pickupDate,
+            dropOffDate,
+            reservationId: result.reservationId, // Use reservationId from the API response
+          },
+        });
+      } else {
+        alert("Reservation failed to return a valid reservationId.");
+      }
     } catch (error) {
       alert("An error occurred while making the reservation.");
       console.error(error);
     }
+  };
+
+  // Rating stars helper
+  const renderStars = (rating) => {
+    const totalStars = 5;
+    let stars = [];
+    for (let i = 1; i <= totalStars; i++) {
+      stars.push(i <= rating ? "★" : "☆");
+    }
+    return stars.join(" ");
   };
 
   return (
@@ -202,7 +305,8 @@ const ReserveNow = () => {
         <p>₹{car.pricePerDay}/day</p>
       </CarDetails>
 
-      <Form onSubmit={handleSubmit}>
+      {/* Reservation Form */}
+      <Form>
         <InputGroup>
           <Label htmlFor="pickupDate">
             <FaCalendarAlt /> Pickup Date
@@ -234,9 +338,38 @@ const ReserveNow = () => {
           <Input type="text" value={`₹${totalPrice}`} disabled />
         </InputGroup>
 
-        <Button type="submit">Confirm Reservation</Button>
+        <Button type="button" onClick={handleSubmit}>
+          Confirm Reservation
+        </Button>
       </Form>
+
+            {/* Reviews Section */}
+            <ReviewSection>
+        <ReviewTitle>Reviews</ReviewTitle>
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <ReviewCard key={review.reviewId}>
+              <ReviewUser>
+                <UserIcon
+                  src="https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
+                  alt="User Icon"
+                />
+                <span>{review.userId}</span> - {renderStars(review.rating)}
+              </ReviewUser>
+              <ReviewContent>{review.comment}</ReviewContent>
+              <ReviewDate>{new Date(review.reviewDate).toLocaleDateString()}</ReviewDate>
+            </ReviewCard>
+          ))
+        ) : (
+          <p>No reviews available for this car.</p>
+        )}
+
+        <WriteReviewButton onClick={navigateToPostReview}>
+          Write a Review
+        </WriteReviewButton>
+      </ReviewSection>
     </Container>
+    
   );
 };
 

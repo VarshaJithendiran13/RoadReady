@@ -13,6 +13,10 @@ import Home from "./pages/Home";
 import ReserveNow from "./pages/ReserveNow";
 import Payment from "./pages/Payment";
 import Success from "./pages/Success";
+import HostRegister from "./pages/HostRegister";
+import Reservations from "./pages/Reservations";
+import SubmitProof from "./pages/SubmitProof";
+import PostReview from "./pages/PostReview";
 
 
 //import { styles } from "./Styles"; // Ensure correct path to styles.js
@@ -40,8 +44,15 @@ const App = () => {
 
           {/* User Profile page */}
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/reservations" element={<Reservations />} />
           
           <Route path="/reservenow/:id" element ={<ReserveNow />} />
+
+          <Route path="/payment" element={<Payment />} />
+
+          <Route path = "/host-register" element = {<HostRegister />} />
+          <Route path="/submit-proof" element={<SubmitProof />} />
+          <Route path="/postreview" element={<PostReview />} />
 
           {/* <Route path="/payment" element={<Payment />} />
           <Route path="/success" element={<Success />} /> */}

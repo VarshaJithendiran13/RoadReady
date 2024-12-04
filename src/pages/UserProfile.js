@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { Box, Typography, TextField, Button, Card, CardContent, List, ListItem, Grid } from "@mui/material";
+import { Edit, Save, Cancel, Delete } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [reservations, setReservations] = useState([]);
+  const [carReservations, setCarReservations] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState({
     firstName: "",
@@ -11,7 +14,7 @@ const UserProfile = () => {
     email: "",
     phoneNumber: "",
   });
-
+  const [carId, setCarId] = useState("");
   const navigate = useNavigate();
 
   // Fetch personal info
@@ -60,7 +63,7 @@ const UserProfile = () => {
         if (res.ok) {
           alert("Profile updated successfully!");
           setEditMode(false);
-          setUserInfo(updatedInfo); // Update the userInfo state with updatedInfo
+          setUserInfo(updatedInfo);
         } else {
           alert("Failed to update profile.");
         }
@@ -68,23 +71,21 @@ const UserProfile = () => {
       .catch((err) => console.error("Error updating user info:", err));
   };
 
-  // Cancel reservation
-  const handleCancelReservation = (reservationId) => {
-    fetch(`https://localhost:7173/api/Reservation/${reservationId}/cancel`, {
-      method: "POST",
+  // Fetch car reservations based on carId
+  const handleFetchCarReservations = () => {
+    if (!carId) {
+      alert("Please enter a car ID.");
+      return;
+    }
+
+    fetch(`https://localhost:7173/api/Reservation/car/${carId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     })
-      .then((res) => {
-        if (res.ok) {
-          alert("Reservation canceled successfully!");
-          setReservations(reservations.filter((r) => r.id !== reservationId));
-        } else {
-          alert("Failed to cancel reservation.");
-        }
-      })
-      .catch((err) => console.error("Error canceling reservation:", err));
+      .then((res) => res.json())
+      .then((data) => setCarReservations(data))
+      .catch((err) => console.error("Error fetching car reservations:", err));
   };
 
   // Delete user account
@@ -99,7 +100,7 @@ const UserProfile = () => {
         if (res.ok) {
           alert("Account deleted successfully.");
           localStorage.removeItem("token");
-          navigate("/login"); // Redirect to login page after account deletion
+          navigate("/login");
         } else {
           alert("Failed to delete account.");
         }
@@ -108,258 +109,210 @@ const UserProfile = () => {
   };
 
   if (!userInfo) {
-    return <div>Loading...</div>; // Add a loading state when userInfo is null
+    return <Typography>Loading...</Typography>;
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.bgImage}>
-        <div style={styles.overlay}></div>
-        <div style={styles.content}>
-          <h1 style={styles.title}>User Profile</h1>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        gap: "20px",
+        padding: "40px",
+        backgroundColor: "#1e1e2f",
+        minHeight: "100vh",
+      }}
+    >
+      {/* Left Section */}
+      <Grid container direction="column" spacing={4} sx={{ flex: 1, maxWidth: "48%" }}>
+        {/* User Info Section */}
+        <Grid item>
+          <Card
+            sx={{
+              backgroundColor: "#2c2c45",
+              color: "#ffffff",
+              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+              borderRadius: "15px",
+              padding: "20px",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: "bold", textAlign: "center" }}>
+                User Details
+              </Typography>
+              {editMode ? (
+                <>
+                  <TextField
+                    fullWidth
+                    label="First Name"
+                    value={updatedInfo.firstName || ""}
+                    onChange={(e) => setUpdatedInfo({ ...updatedInfo, firstName: e.target.value })}
+                    margin="normal"
+                  />
+                  <TextField
+                    fullWidth
+                    label="Last Name"
+                    value={updatedInfo.lastName || ""}
+                    onChange={(e) => setUpdatedInfo({ ...updatedInfo, lastName: e.target.value })}
+                    margin="normal"
+                  />
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    value={updatedInfo.email || ""}
+                    onChange={(e) => setUpdatedInfo({ ...updatedInfo, email: e.target.value })}
+                    margin="normal"
+                  />
+                  <TextField
+                    fullWidth
+                    label="Phone Number"
+                    value={updatedInfo.phoneNumber || ""}
+                    onChange={(e) => setUpdatedInfo({ ...updatedInfo, phoneNumber: e.target.value })}
+                    margin="normal"
+                  />
+                  <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+                    <Button startIcon={<Save />} variant="contained" color="success" onClick={handleUpdate}>
+                      Save
+                    </Button>
+                    <Button startIcon={<Cancel />} variant="contained" color="error" onClick={() => setEditMode(false)}>
+                      Cancel
+                    </Button>
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <Typography><strong>First Name:</strong> {userInfo.firstName}</Typography>
+                  <Typography><strong>Last Name:</strong> {userInfo.lastName}</Typography>
+                  <Typography><strong>Email:</strong> {userInfo.email}</Typography>
+                  <Typography><strong>Phone:</strong> {userInfo.phoneNumber}</Typography>
+                  <Button startIcon={<Edit />} sx={{ marginTop: 2 }} onClick={() => setEditMode(true)} variant="contained">
+                    Edit Profile
+                  </Button>
+                </>
+              )}
+              <Button
+                startIcon={<Delete />}
+                sx={{ marginTop: 2 }}
+                color="error"
+                variant="contained"
+                onClick={handleDeleteAccount}
+              >
+                Delete Account
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
 
-          {/* Profile and Reservations Sections */}
-          <div style={styles.profileContainer}>
-            {/* Left Section: Edit Profile */}
-            <div style={styles.profileSection}>
-              <h2 style={styles.sectionTitle}>Edit Profile</h2>
-              <div style={styles.card}>
-                {editMode ? (
-                  <div style={styles.form}>
-                    <input
-                      style={styles.input}
-                      type="text"
-                      value={updatedInfo.firstName || ""}
-                      onChange={(e) =>
-                        setUpdatedInfo({ ...updatedInfo, firstName: e.target.value })
-                      }
-                      placeholder="First Name"
-                    />
-                    <input
-                      style={styles.input}
-                      type="text"
-                      value={updatedInfo.lastName || ""}
-                      onChange={(e) =>
-                        setUpdatedInfo({ ...updatedInfo, lastName: e.target.value })
-                      }
-                      placeholder="Last Name"
-                    />
-                    <input
-                      style={styles.input}
-                      type="email"
-                      value={updatedInfo.email || ""}
-                      onChange={(e) =>
-                        setUpdatedInfo({ ...updatedInfo, email: e.target.value })
-                      }
-                      placeholder="Email"
-                    />
-                    <input
-                      style={styles.input}
-                      type="text"
-                      value={updatedInfo.phoneNumber || ""}
-                      onChange={(e) =>
-                        setUpdatedInfo({ ...updatedInfo, phoneNumber: e.target.value })
-                      }
-                      placeholder="Phone Number"
-                    />
-                    <div>
-                      <button style={styles.saveButton} onClick={handleUpdate}>
-                        Save
-                      </button>
-                      <button
-                        style={styles.cancelButton}
-                        onClick={() => setEditMode(false)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
+        {/* View Reservations for Your Car Section */}
+        <Grid item>
+          <Card
+            sx={{
+              backgroundColor: "#2c2c45",
+              color: "#ffffff",
+              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+              borderRadius: "15px",
+              padding: "20px",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: "bold", textAlign: "center" }}>
+                View Reservations for Your Car
+              </Typography>
+              <TextField
+                fullWidth
+                label="Enter Car ID"
+                value={carId}
+                onChange={(e) => setCarId(e.target.value)}
+                margin="normal"
+              />
+              <Button
+                sx={{ marginTop: 2 }}
+                variant="contained"
+                onClick={handleFetchCarReservations}
+              >
+                View Reservations
+              </Button>
+
+              <List sx={{ marginTop: 2 }}>
+                {carReservations.length > 0 ? (
+                  carReservations.map((reservation) => (
+                    <ListItem
+                      key={reservation.id}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "10px",
+                        backgroundColor: "#3a3a55",
+                        borderRadius: "10px",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <Box>
+                        <Typography><strong>Car:</strong> {reservation.carId}</Typography>
+                        <Typography><strong>Pickup:</strong> {reservation.pickupDate}</Typography>
+                        <Typography><strong>Dropoff:</strong> {reservation.dropOffDate}</Typography>
+                        <Typography><strong>Status:</strong> {reservation.reservationStatus}</Typography>
+                      </Box>
+                    </ListItem>
+                  ))
                 ) : (
-                  <div>
-                    <p><strong>First Name:</strong> {userInfo.firstName}</p>
-                    <p><strong>Last Name:</strong> {userInfo.lastName}</p>
-                    <p><strong>Email:</strong> {userInfo.email}</p>
-                    <p><strong>Phone Number:</strong> {userInfo.phoneNumber}</p>
-                    <button style={styles.editButton} onClick={() => setEditMode(true)}>
-                      Edit Info
-                    </button>
-                  </div>
+                  <Typography>No reservations found for this car.</Typography>
                 )}
-              </div>
-            </div>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
-            {/* Right Section: Reservations */}
-            <div style={styles.reservationSection}>
-              <h2 style={styles.sectionTitle}>Your Reservations</h2>
-              <div style={styles.card}>
-                {reservations.length > 0 ? (
-                  <ul style={styles.reservationList}>
-                    {reservations.map((reservation) => (
-                      <li key={reservation.id} style={styles.reservationItem}>
-                        <p><strong>Car:</strong> {reservation.carName}</p>
-                        <p><strong>Pickup:</strong> {reservation.pickupDate}</p>
-                        <p><strong>Dropoff:</strong> {reservation.dropOffDate}</p>
-                        <p><strong>Status:</strong> {reservation.status}</p>
-                        {reservation.status === "Active" && (
-                          <button
-                            style={styles.cancelButton}
-                            onClick={() => handleCancelReservation(reservation.id)}
-                          >
-                            Cancel Reservation
-                          </button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No reservations found.</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Delete Account Button */}
-          <div style={styles.deleteAccountContainer}>
-            <button style={styles.deleteAccountButton} onClick={handleDeleteAccount}>
-              Delete Your Account
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      {/* Right Section */}
+      <Grid item sx={{ flex: 1, maxWidth: "48%" }}>
+        <Card
+          sx={{
+            backgroundColor: "#2c2c45",
+            color: "#ffffff",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+            borderRadius: "15px",
+            padding: "20px",
+            minHeight: "100%",
+          }}
+        >
+          <CardContent>
+            <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: "bold", textAlign: "center" }}>
+              Car Reservations
+            </Typography>
+            <List sx={{ marginTop: 2 }}>
+              {reservations.length > 0 ? (
+                reservations.map((reservation) => (
+                  <ListItem
+                    key={reservation.id}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "10px",
+                      backgroundColor: "#3a3a55",
+                      borderRadius: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <Box>
+                      <Typography><strong>Car:</strong> {reservation.carId}</Typography>
+                      <Typography><strong>Pickup:</strong> {reservation.pickupDate}</Typography>
+                      <Typography><strong>Dropoff:</strong> {reservation.dropOffDate}</Typography>
+                      <Typography><strong>Status:</strong> {reservation.reservationStatus}</Typography>
+                    </Box>
+                  </ListItem>
+                ))
+              ) : (
+                <Typography>No reservations found.</Typography>
+              )}
+            </List>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Box>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-    position: "relative",
-    backgroundColor: "#323c54",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-  },
-
-  // bgImage: {
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0,
-  //   width: "100%",
-  //   height: "100%",
-  //   background: "url('https://img.freepik.com/free-vector/white-abstract-background_23-2148810113.jpg?t=st=1733165619~exp=1733169219~hmac=0a4f4cc0d9114188dbe3797236c0f7c60584a7c8177aca1bb79566940bec41ce&w=996') no-repeat center center",
-  //   backgroundSize: "cover",
-  //   zIndex: "-1",
-  //   filter: "brightness(0.5)",
-  // },
-
-  // overlay: {
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0,
-  //   width: "100%",
-  //   height: "100%",
-  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  //   zIndex: "-1",
-  // },
-
-  content: {
-    padding: "40px 20px",
-    color: "#fff",
-    textAlign: "center",
-    maxWidth: "800px",
-    margin: "0 auto",
-    borderRadius: "10px",
-    boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-  },
-  title: {
-    fontSize: "2.5rem",
-    fontWeight: "bold",
-    marginBottom: "20px",
-  },
-  profileContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  profileSection: {
-    width: "100%",
-    maxWidth: "600px",
-    marginBottom: "30px",
-  },
-  reservationSection: {
-    width: "100%",
-    maxWidth: "600px",
-  },
-  card: {
-    backgroundColor: "#333740",
-    borderRadius: "8px",
-    padding: "20px",
-    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-  },
-  sectionTitle: {
-    fontSize: "1.8rem",
-    fontWeight: "bold",
-    marginBottom: "20px",
-  },
-  input: {
-    width: "100%",
-    padding: "12px",
-    marginBottom: "15px",
-    borderRadius: "5px",
-    fontSize: "1rem",
-    border: "1px solid #ddd",
-    backgroundColor: "#f9f9f9",
-  },
-  saveButton: {
-    backgroundColor: "#28a745",
-    color: "#fff",
-    padding: "12px 20px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  cancelButton: {
-    backgroundColor: "#dc3545",
-    color: "#fff",
-    padding: "12px 20px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginLeft: "10px",
-  },
-  editButton: {
-    backgroundColor: "#4CAF50",
-    color: "#fff",
-    padding: "12px 20px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  deleteAccountContainer: {
-    marginTop: "20px",
-  },
-  deleteAccountButton: {
-    backgroundColor: "#dc3545",
-    color: "#fff",
-    padding: "12px 20px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  reservationList: {
-    listStyle: "none",
-    padding: "0",
-  },
-  reservationItem: {
-    padding: "12px",
-    marginBottom: "15px",
-    backgroundColor: "#333740",
-    borderRadius: "8px",
-    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-    border: "1px solid #ddd",
-  },
 };
 
 export default UserProfile;

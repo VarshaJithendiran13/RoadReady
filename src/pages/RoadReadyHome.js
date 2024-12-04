@@ -10,14 +10,60 @@ const Container = styled.div`
   min-height: 100vh;
   font-family: "Roboto", sans-serif;
 `;
-
 const Header = styled.header`
   background-color: #0d47a1;
   padding: 10px 20px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
   color: white;
+  position: relative; /* Allows absolute positioning of inner elements */
+`;
+
+const TopBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const Logo = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+  font-weight: bold;
+`;
+
+const NavBar = styled.nav`
+  display: flex;
+  gap: 15px;
+`;
+
+const MarqueeWrapper = styled.div`
+  position: relative; /* Ensure it moves independently below the top bar */
+  background-color: #0d47a1; /* Matches the header */
+  color: white;
+  padding: 10px 0; /* Add vertical padding for better spacing */
+  font-size: 1em;
+  width: 100%; /* Full width */
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+`;
+
+const MovingText = styled.div`
+  display: inline-block;
+  animation: scroll-text 12s linear infinite; /* Adjust speed to span the entire width */
+  white-space: nowrap;
+
+  @keyframes scroll-text {
+    from {
+      transform: translateX(100%); /* Start off-screen */
+    }
+    to {
+      transform: translateX(-100%); /* End off-screen */
+    }
+  }
 `;
 
 const NavLink = styled(Link)`
@@ -208,17 +254,27 @@ const RoadReadyHome = () => {
     <Container>
       {/* Header */}
       <Header>
-        <div className="roadready-logo">
-          <FaCar /> RoadReady
-        </div>
-        <nav>
-          <NavLink to="/"> <FaHome /> Home </NavLink>
-          <Button onClick={fetchCars}> <FaSearch /> Browse Cars </Button>
-          <NavLink to="/reservations"> <FaCar /> Reservations </NavLink>
-          <NavLink to="/profile"> <FaUser /> Profile </NavLink>
-          <NavLink to="/logout"> <FaSignOutAlt /> Logout </NavLink>
-        </nav>
+        {/* Top bar with logo and navigation */}
+        <TopBar>
+          <Logo>
+            <FaCar /> RoadReady
+          </Logo>
+          <NavBar>
+            <NavLink to="/"> <FaHome /> Home </NavLink>
+            <NavLink to="/submit-proof"> <FaCar /> Become Host </NavLink>
+            <NavLink to="/profile"> <FaUser /> Profile </NavLink>
+            <NavLink to="/"> <FaSignOutAlt /> Logout </NavLink>
+          </NavBar>
+        </TopBar>
+
+        {/* Billboard with moving text */}
+        <MarqueeWrapper>
+          <MovingText>
+            Cars Reserved - 50+ ; Top Car Rented: Toyota Innova, Maruti Swift
+          </MovingText>
+        </MarqueeWrapper>
       </Header>
+
 
       {/* Search Filters */}
       <Filters>
