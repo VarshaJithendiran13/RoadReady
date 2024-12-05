@@ -1,0 +1,17 @@
+﻿# Visual Studio
+.vs/
+
+
+*.sln.ide
+*.user
+*.suo
+*.userprefs
+*.ncb
+*.sdf
+*.opensdf
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.dbproj
+bin/
+obj/
