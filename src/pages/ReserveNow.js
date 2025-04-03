@@ -5,7 +5,8 @@ import { FaCalendarAlt } from "react-icons/fa";
 
 // Styled components for the reservation form
 const Container = styled.div`
-  background-color: #121212;
+  background: url("https://img.freepik.com/free-photo/decorative-background-with-smoke_23-2147611841.jpg?ga=GA1.1.1983064003.1712585757&semt=ais_hybrid");
+  background-size: cover;
   color: #e0e0e0;
   padding: 20px;
   min-height: 100vh;
@@ -13,6 +14,16 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  image-rendering: auto; /* Ensures smooth rendering */
+
+`;
+const CarName = styled.h1`
+  color: #fff;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 3px 3px 7px rgba(0, 0, 0, 0.7);
 `;
 
 const FormTitle = styled.h2`
@@ -292,9 +303,10 @@ const ReserveNow = () => {
 
   return (
     <Container>
-      <FormTitle>Reserve {car.name}</FormTitle>
+      <FormTitle>Reserve Now </FormTitle>
 
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      <CarName>{`${car.make} ${car.model}`}</CarName>
 
       <CarDetails>
         <CarImage

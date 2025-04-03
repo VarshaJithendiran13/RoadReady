@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom"; // for navigation
 import styled from "styled-components";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 // Styled Components for Drag-and-Drop Animation
 const DropArea = styled.div`
@@ -18,12 +20,14 @@ const DropArea = styled.div`
   }
 
   ${(props) =>
-    props.isDragging &&
+    props.$isDragging &&
     `
     border-color: #0d47a1;
     background-color: #bbdefb;
   `}
 `;
+
+
 
 const HighlightText = styled.span`
   color: #0d47a1;
@@ -31,6 +35,10 @@ const HighlightText = styled.span`
 `;
 
 const SubmitProof = () => {
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
+
   const [file, setFile] = useState(null); // To store the file selected by the user
   const [isDragging, setIsDragging] = useState(false); // To handle drag state
   const navigate = useNavigate(); // Hook for navigation
@@ -92,7 +100,7 @@ const SubmitProof = () => {
         alignItems: "center",
         padding: 4,
         minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
+        background: "linear-gradient(to right, #e3f2fd, #bbdefb)",
       }}
     >
       <Typography
@@ -102,7 +110,9 @@ const SubmitProof = () => {
           fontWeight: "bold",
           textAlign: "center",
           color: "#0d47a1",
+          fontFamily: "'Roboto Slab', serif",
         }}
+        data-aos="zoom-in"
       >
         Kindly Submit Any Govt ID Proof To Become Host
       </Typography>
@@ -114,15 +124,17 @@ const SubmitProof = () => {
           maxWidth: "500px",
           textAlign: "center",
         }}
+        data-aos="fade-up"
       >
         {/* Drag-and-Drop Area */}
         <DropArea
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          isDragging={isDragging}
+          $isDragging={isDragging}
+          data-aos="zoom-in-up"
         >
-          <Typography variant="body1" sx={{ marginBottom: 1 }}>
+          <Typography variant="body1" sx={{ marginBottom: 1, color: "#1976d2" }}>
             Drag and drop your file here, or click to select.
           </Typography>
           <Typography variant="caption">
@@ -160,7 +172,9 @@ const SubmitProof = () => {
             cursor: "pointer",
             color: "#1976d2",
             textDecoration: "underline",
+            fontSize: "1rem",
           }}
+          data-aos="fade-left"
         >
           Or browse files from your computer
         </label>
@@ -170,7 +184,16 @@ const SubmitProof = () => {
           variant="contained"
           color="primary"
           fullWidth
-          sx={{ marginTop: 3, padding: "10px 0" }}
+          sx={{
+            marginTop: 3,
+            padding: "10px 0",
+            fontWeight: "bold",
+            backgroundColor: "#0d47a1",
+            "&:hover": {
+              backgroundColor: "#1565c0",
+            },
+          }}
+          data-aos="flip-up"
         >
           Submit
         </Button>

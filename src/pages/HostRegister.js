@@ -3,6 +3,8 @@ import { Box, TextField, Button, Typography, InputAdornment } from "@mui/materia
 import { toast } from "react-toastify";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { useNavigate } from "react-router-dom";
+
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ImageIcon from "@mui/icons-material/Image";
@@ -25,6 +27,12 @@ const HostRegister = () => {
       ...carDetails,
       [e.target.name]: e.target.value,
     });
+  };
+
+ 
+    const navigate = useNavigate();
+  const handleRedirect = () => {
+    navigate("/roadreadyhome"); // Adjust the path to match your route configuration
   };
 
   const handleAddCar = async (e) => {
@@ -183,15 +191,19 @@ const HostRegister = () => {
           fullWidth
           variant="contained"
           color="primary"
+          
           sx={{
             backgroundColor: "#0d47a1",
             padding: "10px",
             fontWeight: "bold",
+            border: "1px solid red",
+
             marginTop: 2,
             "&:hover": {
               backgroundColor: "#1565c0",
             },
           }}
+          onClick={handleRedirect}
         >
           Add Car
         </Button>
